@@ -32,6 +32,11 @@
         <form action="index.php">
             <button type="submit" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back</button>
         </form>
+        <?php
+            if(isset($_GET['order']) && $_GET['order'] == 'miss'){
+                echo '<div class="col-11 text-center alert alert-danger ml-3">ERRORE! BISOGNA COMPILARE TUTTI I CAMPI E AVERE CONTENUTO NEL CARRELLO!</div>';
+            }
+        ?>
         <h1 class="text-center sticker bg-primary font-weight-bold rounded">CARRELLO</h1>
         <br>
 
