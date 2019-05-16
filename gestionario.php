@@ -149,7 +149,7 @@
 
                 echo '<div class="">
                 <form action="editToDatabase.php" method="post" class="rounded border border-primary p-4">
-
+                    <input type="hidden" name="id" value="'.$id.'">
                     <label for="nome"><strong>NOME</strong>: <input value="'.$var['nome'].'" type="text" name="nome" maxlength="30"></label><br>
                     <label for="descrizione"><strong>DESCRIZIONE</strong>: <input value="'.$var['descrizione'].'" type="text" name="descrizione" maxlength="500"></label><br>
                     <label for="prezzo"><strong>PREZZO(€)</strong>: <input value="'.$var['prezzo'].'" type="number" name="prezzo" min="0,01" max="9999999999,99"></label><br>
