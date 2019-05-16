@@ -31,17 +31,37 @@ if(isset($_POST['where'])){
             $id = strip_tags($_POST['id']);
             $nSel = strip_tags($_POST['nSel']);
             $nDisp = strip_tags($_POST['nDisp']);
-    
-            //aggiungo in una nuova riga
-            $stmt = $connection->prepare("INSERT INTO carrello (idProdotto, nC) VALUES (?,?)"); 
-            $stmt->bind_param("ii",$id,$nSel);
+
+            //controllo se c'è già
+            $stmt = $connection->prepare("SELECT nC FROM carrello WHERE idProdotto=?"); 
+            $stmt->bind_param("i",$id);
             $stmt->execute();
+            $var = $stmt->get_result()->fetch_assoc();
             
+            if($var['nC'] == NULL){
+                //non è nel carrello quindi
+                //aggiungo in una nuova riga
+                $stmt = $connection->prepare("INSERT INTO carrello (idProdotto, nC) VALUES (?,?)"); 
+                $stmt->bind_param("ii",$id,$nSel);
+                $stmt->execute();
+                
+            }
+            else{
+                //oppure aggiorno la riga del carrello
+
+                $somma = $var['nC'] + $nSel;
+                $stmt = $connection->prepare("UPDATE carrello SET nC=? WHERE idProdotto=?");
+                $stmt->bind_param("ii",$somma,$id);
+                $stmt->execute();
+            }
+
+            //aggiorno tabella prodotti
             $nDisp -= $nSel;
-    
+        
             $stmt = $connection->prepare("UPDATE prodotti SET n=? WHERE id=?");
             $stmt->bind_param("ii",$nDisp,$id);
             $stmt->execute();
+
             $stmt->close();
     
             header("Location: index.php");

@@ -68,11 +68,11 @@
 
                 <form action="orderConfirmed.php" method="post">
 
-                    <label for="nome">NOME: <input type="text" name="nome" ></label><br>
-                    <label for="comune">CITTA': <input type="text" name="comune" ></label><br>
-                    <label for="indCons">INDIRIZZO CONSEGNA: <input type="text" name="indCons" ></label><br>
-                    <label for="indFatt">INDIRIZZO FATTURAZIONE: <input type="text" name="indFatt" ></label><br>
-                    <label for="cap">CAP: <input type="text" name="cap" ></label><br>
+                    <label for="nome">NOME: <input type="text" name="nome" maxlength="30"></label><br>
+                    <label for="comune">CITTA': <input type="text" name="comune" maxlength="30"></label><br>
+                    <label for="indCons">INDIRIZZO CONSEGNA: <input type="text" name="indCons" maxlength="40"></label><br>
+                    <label for="indFatt">INDIRIZZO FATTURAZIONE: <input type="text" name="indFatt" maxlength="40"></label><br>
+                    <label for="cap">CAP: <input type="number" name="cap"  min="10000" max="99999"></label><br>
                     <input type="hidden" name="totaleOrdine" value="<?=$tot?>">
 
                     <input type="submit" class="btn btn-outline-success" value="Confirm">
