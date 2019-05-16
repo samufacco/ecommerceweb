@@ -1,6 +1,5 @@
 <?php
     include 'connection.php';
-
 ?>
 
 <html> 
@@ -30,7 +29,6 @@
             background-color: rgb(200, 200, 171);
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         }
-
     </style>
 
 </head>
@@ -40,6 +38,17 @@
         <br>
         <h1 class="text-center">Welcome to ASL-SHOP</h1>
         <br>
+        
+        <div class="row">
+            <form action="gestionario.php">
+                <button type="submit" class="btn btn-primary">VAI AL GESTIONALE</button>
+            </form>
+            <?php
+            //ordine confermato
+            if(isset($_GET['order']) && $_GET['order'] == 'confirm')
+                echo '<div class="col-8 text-center alert alert-success ml-3">ORDINE CONFERMATO!</div>';
+            ?>
+        </div>
 
         <div class="row">
             <!--ZONA DEDICATA AI PRODOTTI-->
@@ -47,7 +56,7 @@
                 <label for="prodotti">PRODOTTI:</label>
 
                 <?php
-                    $stmt = $connection->prepare("SELECT * FROM prodotti ORDER BY prezzo DESC");
+                    $stmt = $connection->prepare("SELECT * FROM prodotti ORDER BY id DESC");
                     $stmt->execute();
                     $var = $stmt->get_result();
 
@@ -65,9 +74,10 @@
                                 <p>'.$riga['prezzo'].'€</p>
                                 <p>'.$riga['n'].' pz. disponibili</p>
 
-                                <form action="addToBasket.php" method="post">
+                                <form action="add.php" method="post">
                                     <input class="d-inline" type="number" name="nSel" min="1" max="'.$riga['n'].'">
                                     <div class="col-2 align-self-end d-inline">
+                                        <input type="hidden" name="where" value="toBasket">
                                         <input type="hidden" name="id" value="'.$riga['id'].'">
                                         <input type="hidden" name="nDisp" value="'.$riga['n'].'">
                                         <button type="submit" class="btn btn-outline-primary border border-0">
@@ -87,9 +97,6 @@
             <!--ZONA DEDICATA Al CARRELLO-->
             <div class="col-3 sticker bg-warning">
 
-                <form action="basket.php" method="post">
-                    <label for="carrello"><input class="btn btn-outline-success" type="submit" value="Vai al carrello"></label>
-                </form>
 
                 <?php
                 $stmt = $connection->prepare("SELECT * FROM carrello INNER JOIN prodotti ON prodotti.id = carrello.idProdotto");
@@ -97,6 +104,12 @@
                 $stmt->execute();
                 $var = $stmt->get_result();
                 $stmt->close();
+                
+                echo '<form action="basket.php" method="post">
+                        <label for="carrello">
+                        <button class="btn btn-success" type="submit">Vai al carrello</button>
+                        </label>
+                      </form>';
 
                 foreach($var as $riga){  
 
@@ -106,7 +119,8 @@
                             <p><strong>'.$riga['nome'].'</strong></p>
                             <p>'.$riga['nC'].'pz. -> '.$totCash.'€</p>
 
-                            <form action="removeToBasket.php" method="post">
+                            <form action="remove.php" method="post">
+                                <input type="hidden" name="where" value="toBasket">
                                 <input type="hidden" name="id" value="'.$riga['id'].'">
                                 <input type="hidden" name="nDisp" value="'.$riga['n'].'">
                                 <input type="hidden" name="nSel" value="'.$riga['nC'].'">
@@ -122,6 +136,5 @@
         </div>
 
     </div>
-
 </body>
 </html>

@@ -18,8 +18,8 @@
             font-family: 'Open Sans'; 
         }
 
-        body{
-            background-color: rgb(154,221,242);
+        .container{
+            background-color: rgb(200,200,200);
         }
 
     </style>
@@ -29,7 +29,10 @@
 
     <div class="container">
         <br>
-        <h1 class="text-center sticker bg-primary font-weight-bold">CARRELLO</h1>
+        <form action="index.php">
+            <button type="submit" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back</button>
+        </form>
+        <h1 class="text-center sticker bg-primary font-weight-bold rounded">CARRELLO</h1>
         <br>
 
         <div class="row">
@@ -65,11 +68,11 @@
 
                 <form action="orderConfirmed.php" method="post">
 
-                    <label for="nome">NOME: <input type="text" name="nome" ></label><br>
-                    <label for="comune">CITTA': <input type="text" name="comune" ></label><br>
-                    <label for="indCons">INDIRIZZO CONSEGNA: <input type="text" name="indCons" ></label><br>
-                    <label for="indFatt">INDIRIZZO FATTURAZIONE: <input type="text" name="indFatt" ></label><br>
-                    <label for="cap">CAP: <input type="text" name="cap" ></label><br>
+                    <label for="nome">NOME: <input type="text" name="nome" maxlength="30"></label><br>
+                    <label for="comune">CITTA': <input type="text" name="comune" maxlength="30"></label><br>
+                    <label for="indCons">INDIRIZZO CONSEGNA: <input type="text" name="indCons" maxlength="40"></label><br>
+                    <label for="indFatt">INDIRIZZO FATTURAZIONE: <input type="text" name="indFatt" maxlength="40"></label><br>
+                    <label for="cap">CAP: <input type="number" name="cap"  min="10000" max="99999"></label><br>
                     <input type="hidden" name="totaleOrdine" value="<?=$tot?>">
 
                     <input type="submit" class="btn btn-outline-success" value="Confirm">
@@ -79,25 +82,41 @@
         </div>
 
         <div class="row">
-                <div class="col-12">
+                <br><br>
+                <div class="col-12 border border-dark mt-4 p-2 rounded" style="background-color: rgb(51,153,255);">
+                    <h3 class="text-center">STORICO ORDINI</h3>
 
                     <?php
 
-                    $stmt = $connection->prepare("SELECT * FROM storico INNER JOIN indirizzi ON storico.idIConsegna = indirizzi.id AND storico.idIFattura = indirizzi.id");
+                    $stmt = $connection->prepare("SELECT * FROM storico INNER JOIN indirizzi ON storico.idIConsegna = indirizzi.idIndirizzo ORDER BY id DESC");
                     $stmt->execute();
                     $var = $stmt->get_result();
                     $stmt->close();
 
-                    foreach($var as $riga){ 
+                    if(!mysqli_num_rows($var)){
+                        echo '<div class="text-center font-italic">Nessun ordine effettutato.</div>';
+                    }
+                    else{
+                        foreach($var as $riga){ 
                         
-                        echo '<div class="bg-danger">
-                                <p>Nome: '.$riga['nomeUtente'].'</p>
-                                <p>Città: '.$riga['comune'].'</p>
-                                <p>CAP: '.$riga['cap'].'</p>
-                                <p>Totale ordine: '.$riga['totaleOrdine'].'</p>
-
-                            </div>';
-
+                            $stmt = $connection->prepare("SELECT nomeIndirizzo FROM indirizzi WHERE idIndirizzo=?"); 
+                            $stmt->bind_param("s",$riga['idIConsegna']);
+                            $stmt->execute();
+                            $nomeICons = $stmt->get_result()->fetch_assoc();
+                            $stmt->bind_param("s",$riga['idIFattura']);
+                            $stmt->execute();
+                            $nomeIFatt = $stmt->get_result()->fetch_assoc();
+    
+                            echo '<div class="rounded p-2 pl-5  m-2" style="background-color: rgb(240,190,50);">
+                                    <p><strong class="font-italic">NUMERO ORDINE</strong>: '.$riga['id'].'</p>
+                                    <p><strong class="font-italic">Nome</strong>: '.$riga['nomeUtente'].'</p>
+                                    <p><strong class="font-italic">Città</strong>: '.$riga['comune'].'</p>
+                                    <p><strong class="font-italic">Indirizzo consegna</strong>: '.$nomeICons['nomeIndirizzo'].'</p>
+                                    <p><strong class="font-italic">Indirizzo fatturazione</strong>: '.$nomeIFatt['nomeIndirizzo'].'</p>
+                                    <p><strong class="font-italic">CAP</strong>: '.$riga['cap'].'</p>
+                                    <p><strong class="font-italic">Totale ordine</strong>: '.$riga['totaleOrdine'].'€</p>
+                                </div>';
+                        }
                     }
                     ?>
 

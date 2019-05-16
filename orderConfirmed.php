@@ -9,7 +9,7 @@
     $cap = strip_tags($_POST['cap']);
 
     //aggiungo indirizzi alla tabella indirizzi
-    $stmt = $connection->prepare("INSERT INTO indirizzi (nome) VALUES (?)"); 
+    $stmt = $connection->prepare("INSERT INTO indirizzi (nomeIndirizzo) VALUES (?)"); 
     $stmt->bind_param("s",$indCons);
     $stmt->execute();
     $stmt->bind_param("s",$indFatt);
@@ -17,7 +17,7 @@
     //_______________________________________
 
     //prelevo id indirizzi
-    $stmt = $connection->prepare("SELECT id FROM indirizzi WHERE nome=?"); 
+    $stmt = $connection->prepare("SELECT idIndirizzo FROM indirizzi WHERE nomeIndirizzo=?"); 
     $stmt->bind_param("s",$indCons);
     $stmt->execute();
     $idCons = $stmt->get_result()->fetch_assoc();
@@ -28,7 +28,7 @@
 
     //inserisco dati nello storico
     $stmt = $connection->prepare("INSERT INTO storico (nomeUtente,totaleOrdine,idIConsegna,idIFattura,comune,cap) VALUES (?,?,?,?,?,?)");
-    $stmt->bind_param("ssiiss",$nome,$totOrdine,$idCons['id'],$idFatt['id'],$comune,$cap);
+    $stmt->bind_param("ssiiss",$nome,$totOrdine,$idCons['idIndirizzo'],$idFatt['idIndirizzo'],$comune,$cap);
     $stmt->execute();
 
     //svuoto carrello
