@@ -38,7 +38,7 @@
         <br>
         
         <div class="row">
-            <form action="gestionario.php">
+            <form action="folder.php">
                 <button type="submit" class="btn btn-primary">VAI AL GESTIONALE</button>
             </form>
             <?php
@@ -51,10 +51,10 @@
         <div class="row">
             <!--ZONA DEDICATA AI PRODOTTI-->
             <div class="col-8 sticker bg-light">
-                <label for="prodotti">PRODOTTI:</label>
+                <label for="products">PRODOTTI:</label>
 
                 <?php
-                    $stmt = $connection->prepare("SELECT * FROM prodotti ORDER BY id DESC");
+                    $stmt = $connection->prepare("SELECT * FROM products ORDER BY id DESC");
                     $stmt->execute();
                     $var = $stmt->get_result();
 
@@ -67,10 +67,11 @@
                     foreach($var as $row){  
                         
                         echo '<div class="sticker">
-                                <p><strong>'.$row['nome'].'</strong></p>
-                                <p class="font-italic scadenza">'.$row['descrizione'].'</p>
-                                <p>'.$row['prezzo'].'€</p>
+                                <p><strong>'.$row['nameP'].'</strong></p>
+                                <p class="font-italic scadenza">'.$row['descriptionP'].'</p>
+                                <p>'.$row['cash'].'€</p>
                                 <p>'.$row['n'].' pz. disponibili</p>
+                                <p>Rating: '.$row['rating'].'</p>
 
                                 <form action="add.php" method="post">
                                     <input class="d-inline" type="number" name="nSel" min="1" max="'.$row['n'].'">
@@ -95,31 +96,30 @@
             <div class="col-3 sticker bg-warning">
 
                 <?php
-                $stmt = $connection->prepare("SELECT * FROM carrello INNER JOIN prodotti ON prodotti.id = carrello.idProdotto");
-                
+                $stmt = $connection->prepare("SELECT * FROM basket INNER JOIN products ON products.id = basket.idP");
                 $stmt->execute();
                 $var = $stmt->get_result();
                 $stmt->close();
                 
                 echo '<form action="basket.php" method="post">
-                        <label for="carrello">
+                        <label for="basket">
                         <button class="btn btn-success" type="submit">Vai al carrello</button>
                         </label>
                       </form>';
 
                 foreach($var as $row){  
 
-                    $totCash = $row['nC'] * $row['prezzo'];
+                    $totCash = $row['nInB'] * $row['cash'];
 
                     echo '<div class="sticker">
-                            <p><strong>'.$row['nome'].'</strong></p>
-                            <p>'.$row['nC'].'pz. -> '.$totCash.'€</p>
+                            <p><strong>'.$row['nameP'].'</strong></p>
+                            <p>'.$row['nInB'].'pz. -> '.$totCash.'€</p>
 
                             <form action="remove.php" method="post">
                                 <input type="hidden" name="where" value="toBasket">
                                 <input type="hidden" name="id" value="'.$row['id'].'">
                                 <input type="hidden" name="nDisp" value="'.$row['n'].'">
-                                <input type="hidden" name="nSel" value="'.$row['nC'].'">
+                                <input type="hidden" name="nSel" value="'.$row['nInB'].'">
                                 <input type="submit" class="btn btn-outline-danger border border-0" value="X"> 
                             </form>
                             </div>';

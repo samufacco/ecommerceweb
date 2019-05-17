@@ -2,41 +2,41 @@
     include 'connection.php';
 
     //se tutti i campi sono stati compilati
-    if($_POST['nome']!=NULL && $_POST['totaleOrdine']!=0 && $_POST['indCons']!=NULL && 
-        $_POST['indFatt']!=NULL && $_POST['comune']!=NULL && $_POST['cap']!=NULL){
+    if($_POST['user']!=NULL && $_POST['totCash']!=0 && $_POST['adrCons']!=NULL && 
+        $_POST['adrFatt']!=NULL && $_POST['city']!=NULL && $_POST['cap']!=NULL){
 
-        $nome = strip_tags($_POST['nome']);
-        $totOrdine = strip_tags($_POST['totaleOrdine']);
-        $indCons = strip_tags($_POST['indCons']);
-        $indFatt = strip_tags($_POST['indFatt']);
-        $comune = strip_tags($_POST['comune']);
+        $user = strip_tags($_POST['user']);
+        $totCash = strip_tags($_POST['totCash']);
+        $adrCons = strip_tags($_POST['adrCons']);
+        $adrFatt = strip_tags($_POST['adrFatt']);
+        $city = strip_tags($_POST['city']);
         $cap = strip_tags($_POST['cap']);
 
         //aggiungo indirizzi alla tabella indirizzi
-        $stmt = $connection->prepare("INSERT INTO indirizzi (nomeIndirizzo) VALUES (?)"); 
-        $stmt->bind_param("s",$indCons);
+        $stmt = $connection->prepare("INSERT INTO addresses (nameAdr) VALUES (?)"); 
+        $stmt->bind_param("s",$adrCons);
         $stmt->execute();
-        $stmt->bind_param("s",$indFatt);
+        $stmt->bind_param("s",$adrFatt);
         $stmt->execute();
         //_______________________________________
 
         //prelevo id indirizzi
-        $stmt = $connection->prepare("SELECT idIndirizzo FROM indirizzi WHERE nomeIndirizzo=?"); 
-        $stmt->bind_param("s",$indCons);
+        $stmt = $connection->prepare("SELECT idAdr FROM addresses WHERE nameAdr=?"); 
+        $stmt->bind_param("s",$adrCons);
         $stmt->execute();
         $idCons = $stmt->get_result()->fetch_assoc();
-        $stmt->bind_param("s",$indFatt);
+        $stmt->bind_param("s",$adrFatt);
         $stmt->execute();
         $idFatt = $stmt->get_result()->fetch_assoc();
         //_______________________________________
 
         //inserisco dati nello storico
-        $stmt = $connection->prepare("INSERT INTO storico (nomeUtente,totaleOrdine,idIConsegna,idIFattura,comune,cap) VALUES (?,?,?,?,?,?)");
-        $stmt->bind_param("ssiiss",$nome,$totOrdine,$idCons['idIndirizzo'],$idFatt['idIndirizzo'],$comune,$cap);
+        $stmt = $connection->prepare("INSERT INTO historical (user,totCash,idAdrCons,idAdrFatt,city,cap) VALUES (?,?,?,?,?,?)");
+        $stmt->bind_param("ssiiss",$user,$totCash,$idCons['idAdr'],$idFatt['idAdr'],$city,$cap);
         $stmt->execute();
 
         //svuoto carrello
-        $stmt = $connection->prepare("DELETE FROM carrello");
+        $stmt = $connection->prepare("DELETE FROM basket");
         $stmt->execute();
         $stmt->close();
 
@@ -45,5 +45,3 @@
     else{
         header("Location: basket.php?order=miss");
     }
-
-?>
