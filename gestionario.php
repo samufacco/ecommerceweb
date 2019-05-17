@@ -1,11 +1,9 @@
 <?php
     include 'connection.php';
 ?>
-
 <html>
 <head>
     <title>GESTIONARIO ASL-SHOP</title>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -30,10 +28,8 @@
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         }
     </style>
-
 </head>
 <body>
-
     <div class="container pb-2"> 
         <br>
         <form action="index.php">
@@ -42,7 +38,6 @@
         <h1 class="text-center">BENVENUTO NEL GESTIONARIO DELL'ASL-SHOP!</h1>
 
         <?php
-
             if(isset($_GET['ris'])){
                 if($_GET['ris'] == 'add'){
                     echo '<div class="col-12 text-center alert alert-success">PRODOTTO AGGIUNTO CON SUCCESSO!</div>';
@@ -60,11 +55,11 @@
         ?>
 
         <form action="gestionario.php" method="post">
-        <div class="row pagination justify-content-center m-2">
-            <button type ="submit" name="add" class="m-3 btn btn-primary">AGGIUNGI PRODOTTO</button>
-            <button type ="submit" name="edit" class="m-3 btn btn-warning">MODIFICA PRODOTTO</button>
-            <button type ="submit" name="delete" class="m-3 btn btn-danger">ELIMINA PRODOTTO</button>
-        </div>  
+            <div class="row pagination justify-content-center m-2">
+                <button type ="submit" name="add" class="m-3 btn btn-primary">AGGIUNGI PRODOTTO</button>
+                <button type ="submit" name="edit" class="m-3 btn btn-warning">MODIFICA PRODOTTO</button>
+                <button type ="submit" name="delete" class="m-3 btn btn-danger">ELIMINA PRODOTTO</button>
+            </div>  
         </form>
 
         <?php 
@@ -82,7 +77,6 @@
                             <button type="submit" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Aggiungi</button>
                         </form>
                       </div>';
-
             }
             //schermata rimozione prodotto
             else if(isset($_POST['delete'])){
@@ -91,25 +85,24 @@
                 $stmt->execute();
                 $var = $stmt->get_result();
 
-                foreach($var as $riga){  
+                foreach($var as $row){  
                 
                     echo '<div class="sticker">
-                            <p><strong>'.$riga['nome'].'</strong></p>
-                            <p class="font-italic scadenza">'.$riga['descrizione'].'</p>
-                            <p>'.$riga['prezzo'].'€</p>
-                            <p>'.$riga['n'].' pz. disponibili</p>
-                            <p>Rating: '.$riga['rating'].'</p>
+                            <p><strong>'.$row['nome'].'</strong></p>
+                            <p class="font-italic scadenza">'.$row['descrizione'].'</p>
+                            <p>'.$row['prezzo'].'€</p>
+                            <p>'.$row['n'].' pz. disponibili</p>
+                            <p>Rating: '.$row['rating'].'</p>
 
                             <form action="remove.php" method="post">
                                     <input type="hidden" name="where" value="toDatabase">
-                                    <input type="hidden" name="id" value="'.$riga['id'].'">
+                                    <input type="hidden" name="id" value="'.$row['id'].'">
                                     <button type="submit" onclick="alert("Confermi di cancellare il prodotto dal sito?");" class="btn btn-outline-danger border border-0">
                                             <i class="fa fa-archive"></i> Rimuovi           
                                     </button> 
                             </form>
                         </div>';
                 }
-
             }
             //schermata modifica prodotto
             else if(isset($_POST['edit'])){
@@ -118,17 +111,17 @@
                 $stmt->execute();
                 $var = $stmt->get_result();
 
-                foreach($var as $riga){  
+                foreach($var as $row){  
             
                     echo '<div class="sticker">
-                            <p><strong>'.$riga['nome'].'</strong></p>
-                            <p class="font-italic scadenza">'.$riga['descrizione'].'</p>
-                            <p>'.$riga['prezzo'].'€</p>
-                            <p>'.$riga['n'].' pz. disponibili</p>
-                            <p>Rating: '.$riga['rating'].'</p>
+                            <p><strong>'.$row['nome'].'</strong></p>
+                            <p class="font-italic scadenza">'.$row['descrizione'].'</p>
+                            <p>'.$row['prezzo'].'€</p>
+                            <p>'.$row['n'].' pz. disponibili</p>
+                            <p>Rating: '.$row['rating'].'</p>
 
                             <form action="gestionario.php?on=edit" method="post">
-                                    <input type="hidden" name="id" value="'.$riga['id'].'">
+                                    <input type="hidden" name="id" value="'.$row['id'].'">
                                     <button type="submit" class="btn btn-warning border border-0">
                                             <i class="fa fa-pencil"></i> Modifica           
                                     </button> 
@@ -148,21 +141,18 @@
                 $var = $stmt->get_result()->fetch_array();
 
                 echo '<div class="">
-                <form action="editToDatabase.php" method="post" class="rounded border border-primary p-4">
-                    <input type="hidden" name="id" value="'.$id.'">
-                    <label for="nome"><strong>NOME</strong>: <input value="'.$var['nome'].'" type="text" name="nome" maxlength="30"></label><br>
-                    <label for="descrizione"><strong>DESCRIZIONE</strong>: <input value="'.$var['descrizione'].'" type="text" name="descrizione" maxlength="500"></label><br>
-                    <label for="prezzo"><strong>PREZZO(€)</strong>: <input value="'.$var['prezzo'].'" type="number" name="prezzo" min="0,01" max="9999999999,99"></label><br>
-                    <label for="n"><strong>NUMERO DISPONIBILE</strong>: <input value="'.$var['n'].'" type="number" name="n" min="1" max="999999"></label><br>
-                    <label for="rating"><strong>RATING</strong>: <input value="'.$var['rating'].'" type="number" name="rating" min="1" max="5"></label><br>
-                    <button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> Conferma</button>
-                </form>
-              </div>';
-
+                        <form action="editToDatabase.php" method="post" class="rounded border border-primary p-4">
+                            <input type="hidden" name="id" value="'.$id.'">
+                            <label for="nome"><strong>NOME</strong>: <input value="'.$var['nome'].'" type="text" name="nome" maxlength="30"></label><br>
+                            <label for="descrizione"><strong>DESCRIZIONE</strong>: <input value="'.$var['descrizione'].'" type="text" name="descrizione" maxlength="500"></label><br>
+                            <label for="prezzo"><strong>PREZZO(€)</strong>: <input value="'.$var['prezzo'].'" type="number" name="prezzo" min="0,01" max="9999999999,99"></label><br>
+                            <label for="n"><strong>NUMERO DISPONIBILE</strong>: <input value="'.$var['n'].'" type="number" name="n" min="1" max="999999"></label><br>
+                            <label for="rating"><strong>RATING</strong>: <input value="'.$var['rating'].'" type="number" name="rating" min="1" max="5"></label><br>
+                            <button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> Conferma</button>
+                        </form>
+                      </div>';
             }
         ?>
-
     </div>
-
 </body>
 </html>

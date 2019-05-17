@@ -1,7 +1,6 @@
 <?php
     include 'connection.php';
 ?>
-
 <html> 
 <head>
     <title>ASL-SHOP</title>
@@ -30,7 +29,6 @@
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         }
     </style>
-
 </head>
 <body>
 
@@ -66,20 +64,20 @@
                             echo '<script> alert("Inserire quantità!");</script>';
                     }
 
-                    foreach($var as $riga){  
+                    foreach($var as $row){  
                         
                         echo '<div class="sticker">
-                                <p><strong>'.$riga['nome'].'</strong></p>
-                                <p class="font-italic scadenza">'.$riga['descrizione'].'</p>
-                                <p>'.$riga['prezzo'].'€</p>
-                                <p>'.$riga['n'].' pz. disponibili</p>
+                                <p><strong>'.$row['nome'].'</strong></p>
+                                <p class="font-italic scadenza">'.$row['descrizione'].'</p>
+                                <p>'.$row['prezzo'].'€</p>
+                                <p>'.$row['n'].' pz. disponibili</p>
 
                                 <form action="add.php" method="post">
-                                    <input class="d-inline" type="number" name="nSel" min="1" max="'.$riga['n'].'">
+                                    <input class="d-inline" type="number" name="nSel" min="1" max="'.$row['n'].'">
                                     <div class="col-2 align-self-end d-inline">
                                         <input type="hidden" name="where" value="toBasket">
-                                        <input type="hidden" name="id" value="'.$riga['id'].'">
-                                        <input type="hidden" name="nDisp" value="'.$riga['n'].'">
+                                        <input type="hidden" name="id" value="'.$row['id'].'">
+                                        <input type="hidden" name="nDisp" value="'.$row['n'].'">
                                         <button type="submit" class="btn btn-outline-primary border border-0">
                                                 <i class="fa fa-plus-circle"></i> Aggiungi al carrello           
                                         </button> 
@@ -88,7 +86,6 @@
                               </div>';
 
                     }
-
                     $stmt->close();
                 ?>
 
@@ -96,7 +93,6 @@
 
             <!--ZONA DEDICATA Al CARRELLO-->
             <div class="col-3 sticker bg-warning">
-
 
                 <?php
                 $stmt = $connection->prepare("SELECT * FROM carrello INNER JOIN prodotti ON prodotti.id = carrello.idProdotto");
@@ -111,30 +107,27 @@
                         </label>
                       </form>';
 
-                foreach($var as $riga){  
+                foreach($var as $row){  
 
-                    $totCash = $riga['nC'] * $riga['prezzo'];
+                    $totCash = $row['nC'] * $row['prezzo'];
 
                     echo '<div class="sticker">
-                            <p><strong>'.$riga['nome'].'</strong></p>
-                            <p>'.$riga['nC'].'pz. -> '.$totCash.'€</p>
+                            <p><strong>'.$row['nome'].'</strong></p>
+                            <p>'.$row['nC'].'pz. -> '.$totCash.'€</p>
 
                             <form action="remove.php" method="post">
                                 <input type="hidden" name="where" value="toBasket">
-                                <input type="hidden" name="id" value="'.$riga['id'].'">
-                                <input type="hidden" name="nDisp" value="'.$riga['n'].'">
-                                <input type="hidden" name="nSel" value="'.$riga['nC'].'">
+                                <input type="hidden" name="id" value="'.$row['id'].'">
+                                <input type="hidden" name="nDisp" value="'.$row['n'].'">
+                                <input type="hidden" name="nSel" value="'.$row['nC'].'">
                                 <input type="submit" class="btn btn-outline-danger border border-0" value="X"> 
                             </form>
                             </div>';
 
                 }
-
                 ?>
-
             </div>
         </div>
-
     </div>
 </body>
 </html>
