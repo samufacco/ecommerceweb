@@ -1,8 +1,6 @@
 <?php
     include 'connection.php';
-
 ?>
-
 <html> 
 <head>
     <title>CARRELLO ASL-SHOP</title>
@@ -21,9 +19,7 @@
         .container{
             background-color: rgb(200,200,200);
         }
-
     </style>
-
 </head>
 <body>
 
@@ -45,7 +41,7 @@
             <div class="col-4 p-2 btn btn-outline-dark" >
                 <?php
 
-                $stmt = $connection->prepare("SELECT * FROM carrello INNER JOIN prodotti ON prodotti.id = carrello.idProdotto");
+                $stmt = $connection->prepare("SELECT * FROM basket INNER JOIN products ON products.id = basket.idP");
                 $stmt->execute();
                 $var = $stmt->get_result();
                 $stmt->close();
@@ -53,12 +49,12 @@
                 echo '<p class="text-center p-1"><strong>RIEPILOGO ORDINE</strong></p>';
 
                 $tot=0;
-                foreach($var as $riga){  
+                foreach($var as $row){  
 
-                    $totCash = $riga['nC'] * $riga['prezzo'];
+                    $totCash = $row['nInB'] * $row['cash'];
                     $tot += $totCash;
                     echo '<div class="bg-warning text-center">
-                            <p><strong>'.$riga['nome'].'</strong>&nbsp&nbsp&nbsp'.$riga['nC'].'pz. -> '.$totCash.'€</p>
+                            <p><strong>'.$row['nameP'].'</strong>&nbsp&nbsp&nbsp'.$row['nInB'].'pz. -> '.$totCash.'€</p>
                         </div>';
 
                 }
@@ -68,21 +64,16 @@
             
             <div class="col-1"></div>
             <div class="col-5 btn btn-outline-dark">
-                
                 <h3>Dati personali:</h3>
-
                 <form action="orderConfirmed.php" method="post">
-
-                    <label for="nome">NOME: <input type="text" name="nome" maxlength="30"></label><br>
-                    <label for="comune">CITTA': <input type="text" name="comune" maxlength="30"></label><br>
-                    <label for="indCons">INDIRIZZO CONSEGNA: <input type="text" name="indCons" maxlength="40"></label><br>
-                    <label for="indFatt">INDIRIZZO FATTURAZIONE: <input type="text" name="indFatt" maxlength="40"></label><br>
+                    <label for="user">NOME: <input type="text" name="user" maxlength="30"></label><br>
+                    <label for="city">CITTA': <input type="text" name="city" maxlength="30"></label><br>
+                    <label for="adrCons">INDIRIZZO CONSEGNA: <input type="text" name="adrCons" maxlength="40"></label><br>
+                    <label for="adrFatt">INDIRIZZO FATTURAZIONE: <input type="text" name="adrFatt" maxlength="40"></label><br>
                     <label for="cap">CAP: <input type="number" name="cap"  min="10000" max="99999"></label><br>
-                    <input type="hidden" name="totaleOrdine" value="<?=$tot?>">
-
+                    <input type="hidden" name="totCash" value="<?=$tot?>">
                     <input type="submit" class="btn btn-outline-success" value="Confirm">
                 </form>
-                 
             </div>
         </div>
 
@@ -92,43 +83,39 @@
                     <h3 class="text-center">STORICO ORDINI</h3>
 
                     <?php
+                        $stmt = $connection->prepare("SELECT * FROM historical INNER JOIN addresses ON historical.idAdrCons = addresses.idAdr ORDER BY id DESC");
+                        $stmt->execute();
+                        $var = $stmt->get_result();
+                        $stmt->close();
 
-                    $stmt = $connection->prepare("SELECT * FROM storico INNER JOIN indirizzi ON storico.idIConsegna = indirizzi.idIndirizzo ORDER BY id DESC");
-                    $stmt->execute();
-                    $var = $stmt->get_result();
-                    $stmt->close();
-
-                    if(!mysqli_num_rows($var)){
-                        echo '<div class="text-center font-italic">Nessun ordine effettutato.</div>';
-                    }
-                    else{
-                        foreach($var as $riga){ 
-                        
-                            $stmt = $connection->prepare("SELECT nomeIndirizzo FROM indirizzi WHERE idIndirizzo=?"); 
-                            $stmt->bind_param("s",$riga['idIConsegna']);
-                            $stmt->execute();
-                            $nomeICons = $stmt->get_result()->fetch_assoc();
-                            $stmt->bind_param("s",$riga['idIFattura']);
-                            $stmt->execute();
-                            $nomeIFatt = $stmt->get_result()->fetch_assoc();
-    
-                            echo '<div class="rounded p-2 pl-5  m-2" style="background-color: rgb(240,190,50);">
-                                    <p><strong class="font-italic">NUMERO ORDINE</strong>: '.$riga['id'].'</p>
-                                    <p><strong class="font-italic">Nome</strong>: '.$riga['nomeUtente'].'</p>
-                                    <p><strong class="font-italic">Città</strong>: '.$riga['comune'].'</p>
-                                    <p><strong class="font-italic">Indirizzo consegna</strong>: '.$nomeICons['nomeIndirizzo'].'</p>
-                                    <p><strong class="font-italic">Indirizzo fatturazione</strong>: '.$nomeIFatt['nomeIndirizzo'].'</p>
-                                    <p><strong class="font-italic">CAP</strong>: '.$riga['cap'].'</p>
-                                    <p><strong class="font-italic">Totale ordine</strong>: '.$riga['totaleOrdine'].'€</p>
-                                </div>';
+                        if(!mysqli_num_rows($var)){
+                            echo '<div class="text-center font-italic">Nessun ordine effettutato.</div>';
                         }
-                    }
+                        else{
+                            foreach($var as $row){ 
+                            
+                                $stmt = $connection->prepare("SELECT nameAdr FROM addresses WHERE idAdr=?"); 
+                                $stmt->bind_param("s",$row['idAdrCons']);
+                                $stmt->execute();
+                                $nomeICons = $stmt->get_result()->fetch_assoc();
+                                $stmt->bind_param("s",$row['idAdrFatt']);
+                                $stmt->execute();
+                                $nomeIFatt = $stmt->get_result()->fetch_assoc();
+        
+                                echo '<div class="rounded p-2 pl-5  m-2" style="background-color: rgb(240,190,50);">
+                                        <p><strong class="font-italic">NUMERO ORDINE</strong>: '.$row['id'].'</p>
+                                        <p><strong class="font-italic">Nome</strong>: '.$row['user'].'</p>
+                                        <p><strong class="font-italic">Città</strong>: '.$row['city'].'</p>
+                                        <p><strong class="font-italic">Indirizzo consegna</strong>: '.$nomeICons['nameAdr'].'</p>
+                                        <p><strong class="font-italic">Indirizzo fatturazione</strong>: '.$nomeIFatt['nameAdr'].'</p>
+                                        <p><strong class="font-italic">CAP</strong>: '.$row['cap'].'</p>
+                                        <p><strong class="font-italic">Totale ordine</strong>: '.$row['totCash'].'€</p>
+                                    </div>';
+                            }
+                        }
                     ?>
-
                 </div>
-        </div>       
-
+        </div>
     </div>
-
 </body>
 </html>
